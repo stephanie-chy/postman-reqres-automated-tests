@@ -1,0 +1,57 @@
+{
+	"id": "65415b21-7866-4aff-8cee-b355537a5791",
+	"values": [
+		{
+			"key": "base-url",
+			"value": "https://reqres.in",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "user_name",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "user_job",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "created_id",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "data_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "updated_name",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "updated_job",
+			"value": "",
+			"type": "default",
+			"enabled": true
+		},
+		{
+			"key": "delete_data_id",
+			"value": "1",
+			"type": "default",
+			"enabled": true
+		}
+	],
+	"name": "Globals",
+	"_postman_variable_scope": "globals",
+	"_postman_exported_at": "2025-04-30T05:55:44.116Z",
+	"_postman_exported_using": "Postman/11.43.3"
+}

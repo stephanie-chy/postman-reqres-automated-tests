@@ -1,0 +1,311 @@
+{
+	"info": {
+		"_postman_id": "c8c9a384-5b00-40a9-92eb-a44c3fde41f3",
+		"name": "ReqRes API Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "44554855"
+	},
+	"item": [
+		{
+			"name": "POST /api/users",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set(\"user_name\", pm.variables.replaceIn(\"{{$randomFirstName}} {{$randomLastName}}\"));\r",
+							"pm.globals.set(\"user_job\", pm.variables.replaceIn(\"{{$randomJobTitle}}\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TC01: Verify status code is 201 (Created).\r",
+							"pm.test(\"Status is 201\", () => pm.response.to.have.status(201));\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// TC02: Verify response contains name, job, id, and createdAt fields.\r",
+							"pm.test(\"Response contains name, job, id, and createdAt felds.\", () => {\r",
+							"    [\"name\", \"job\", \"id\", \"createdAt\"].forEach(key => \r",
+							"        pm.expect(response).to.have.property(key)\r",
+							"    );\r",
+							"});\r",
+							"\r",
+							"// TC03: Verify name match the request data.\r",
+							"pm.test(\"Name matches the request data\", () => {\r",
+							"    pm.expect(response.name).to.eql(pm.globals.get(\"user_name\"));\r",
+							"});\r",
+							"\r",
+							"// TC04: Verify job match the request data.\r",
+							"pm.test(\"Job matches the request data\", () => {\r",
+							"    pm.expect(response.job).to.eql(pm.globals.get(\"user_job\"));\r",
+							"});\r",
+							"\r",
+							"// TC05: Verify that id is not null.\r",
+							"pm.test(\"ID is not null\", () => {\r",
+							"    pm.expect(response.id).to.exist;\r",
+							"    pm.globals.set(\"created_id\", response.id);\r",
+							"});\r",
+							"\r",
+							"// TC06: Verify that createdAt is in correct format.\r",
+							"pm.test(\"createdAt is ISO timestamp\", () => {\r",
+							"    const isoRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/;\r",
+							"    pm.expect(response.createdAt).to.match(isoRegex);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{user_name}}\",\r\n    \"job\": \"{{user_job}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/users",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET /api/users/id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomId = Math.floor(Math.random() * 10) + 1;\r",
+							"pm.environment.set(\"data_id\", randomId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TC01: Verify status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// TC02: Verify response has 'data' and 'support' as objects\r",
+							"const response = pm.response.json();\r",
+							"pm.test(\"Response has 'data' and 'support' as objects\", function () {\r",
+							"    pm.expect(response).to.have.property(\"data\").that.is.an(\"object\");\r",
+							"    pm.expect(response).to.have.property(\"support\").that.is.an(\"object\");\r",
+							"});\r",
+							"\r",
+							"// TC03: Verify 'data' contains id, email, first_name, last_name, avatar with correct types\r",
+							"pm.test(\"'data' contains required fields with correct types\", function () {\r",
+							"    pm.expect(response.data).to.have.property(\"id\").that.is.a(\"number\");\r",
+							"    pm.expect(response.data).to.have.property(\"email\").that.is.a(\"string\");\r",
+							"    pm.expect(response.data).to.have.property(\"first_name\").that.is.a(\"string\");\r",
+							"    pm.expect(response.data).to.have.property(\"last_name\").that.is.a(\"string\");\r",
+							"    pm.expect(response.data).to.have.property(\"avatar\").that.is.a(\"string\");\r",
+							"});\r",
+							"\r",
+							"// TC04: Verify 'support' contains url and text with correct types\r",
+							"pm.test(\"'support' contains required fields with correct types\", function () {\r",
+							"    pm.expect(response.support).to.have.property(\"url\").that.is.a(\"string\");\r",
+							"    pm.expect(response.support).to.have.property(\"text\").that.is.a(\"string\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/users/{{data_id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{data_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT /api/users/id",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set(\"updated_name\", pm.variables.replaceIn(\"{{$randomFirstName}} {{$randomLastName}}\"));\r",
+							"pm.globals.set(\"updated_job\", pm.variables.replaceIn(\"{{$randomJobTitle}}\"));"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TC01: Verify status code is 200 (OK).\r",
+							"pm.test(\"Status is 200\", () => pm.response.to.have.status(200));\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"// TC02: Verify response contains name, job, id, and updatedAt fields.\r",
+							"pm.test(\"Response contains name, job, and updatedAt felds.\", () => {\r",
+							"    [\"name\", \"job\", \"updatedAt\"].forEach(key => \r",
+							"        pm.expect(response).to.have.property(key)\r",
+							"    );\r",
+							"});\r",
+							"\r",
+							"// TC03: Verify name match the request data.\r",
+							"pm.test(\"Name matches the request data\", () => {\r",
+							"    pm.expect(response.name).to.eql(pm.globals.get(\"updated_name\"));\r",
+							"});\r",
+							"\r",
+							"// TC04: Verify job match the request data.\r",
+							"pm.test(\"Job matches the request data\", () => {\r",
+							"    pm.expect(response.job).to.eql(pm.globals.get(\"updated_job\"));\r",
+							"});\r",
+							"\r",
+							"// TC05: Verify that updatedAt is in correct format.\r",
+							"pm.test(\"updatedAt is ISO timestamp\", () => {\r",
+							"    const isoRegex = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d{3}Z$/;\r",
+							"    pm.expect(response.updatedAt).to.match(isoRegex);\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{updated_name}}\",\r\n    \"job\": \"{{updated_job}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base-url}}/api/users/{{data_id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{data_id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const randomId = Math.floor(Math.random() * 10) + 1;\r",
+							"pm.environment.set(\"delete_data_id\", randomId);"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// TC01: Verify status code is 204 (No Content).\r",
+							"pm.test(\"Status is 201\", () => pm.response.to.have.status(204));\r",
+							"\r",
+							"const response = pm.response.text();\r",
+							"\r",
+							"// TC02: Verify response body is empty.\r",
+							"pm.test(\"Response body is empty\", () => {\r",
+							"    pm.expect(response).to.eql(\"\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "reqres-free-v1",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base-url}}/api/users/{{delete_data_id}}",
+					"host": [
+						"{{base-url}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"{{delete_data_id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
